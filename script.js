@@ -10,3 +10,37 @@ window.onload = function () {
   const users = getUserIds();
   document.querySelector("body").innerText = `There are ${users.length} users`;
 };
+
+function displayBookmarks(userId) {}
+
+//we create a single instance of a bookmark
+function createBookmark(bookMark) {
+  const bookmark = document
+    .getElementById("bookmark-template")
+    .content.cloneNode(true);
+  bookmark.querySelector("h2").textContent = bookMark.title;
+  bookmark.querySelector(".description").textContent = bookMark.description;
+  bookmark.querySelector(".timeCreated").textContent = bookMark.timestamp;
+  bookmark.querySelector("#bookmark-url").href = bookMark.URL;
+
+  return bookmark;
+}
+
+const user1 = [
+  {
+    userId: "1",
+    title: "MDN resource",
+    URL: "https://developer.mozilla.org/en-US/",
+    description:
+      "A useful resource for web developers, new and old. has learning materials and in depth explanations of HTML, CSS and JS topics",
+    timestamp: "1/10/26 12:00",
+  },
+  {
+    userId: "1",
+    title: "W3Schools",
+    URL: "https://www.w3schools.com/",
+    description:
+      "A quick reference site for web developers. With tutorials and in depth explanations of HTML, CSS and JS topics",
+    timestamp: "12/09/26 17:00",
+  },
+];
