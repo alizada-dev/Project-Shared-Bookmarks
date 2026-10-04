@@ -4,10 +4,21 @@
 // Note that when running locally, in order to open a web page which uses modules, you must serve the directory over HTTP e.g. with https://www.npmjs.com/package/http-server
 // You can't open the index.html file using a file:// URL.
 
-import { getUserIds } from "./storage.js";
+import { getData, getUserIds, setData } from "./storage.js";
 
+// Elements
 const userSelect = document.querySelector(".select");
+const bookmarksContainer = document.querySelector(".bookmarks-container");
+const bookmarkForm = document.querySelector("#bookmarks-form");
+const siteTitle = document.querySelector("#title");
+const siteDesc = document.querySelector("#desc");
+const siteUrl = document.querySelector("#url")
+const msg = document.querySelector(".message");
 
+// Global variables
+let currentUser = null;
+
+// Loading the users
 function loadUsers() {
   const users = getUserIds();
 
@@ -19,6 +30,77 @@ function loadUsers() {
   })
 }
 
+// selecting users from the dropdown
+userSelect.addEventListener("change", e => {
+  currentUser = e.target.value;
+  const userData = getData(currentUser) || [];
+
+  if (userData.length === 0) {
+    msg.textContent = "Sorry, no saved bookmark for the selected user."
+
+    bookmarksContainer.style.display = "none";
+    bookmarkForm.style.display = "block"
+    return;
+  }
+  
+  bookmarksContainer.style.display = "block";
+  bookmarkForm.style.display = "block";
+  
+  displayBookmarks();
+})
+
+function displayBookmarks() {
+  const bookmarks = getData(currentUser) || [];
+  
+  bookmarks.sort((a, b) => b.createTime - a.createTime)
+  bookmarksContainer.innerHTML = "";
+  bookmarksContainer.innerHTML = `<h2>Saved bookmarks</h2>`;
+
+  bookmarks.forEach((bookmark, index) => {
+    bookmarksContainer.innerHTML += `
+      <div class="bookmark-details">
+          <a href="${bookmark.siteUrl}">${bookmark.siteName}</a>
+          <p>${bookmark.siteDesc}</p>
+          <h3>${bookmark.timeStamp}</h3>
+      </div>
+    `
+  })
+}
+
+// Submit button
+bookmarkForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  if (!currentUser) return;
+  addBookmark();
+});
+
+// Adding a new bookmark
+function addBookmark() {
+  if (!currentUser) return;
+
+  const bookmarks = getData(currentUser) || [];
+
+  // Pushing the new bookmark to the storage
+  bookmarks.push({
+    siteName: siteTitle.value,
+    siteDesc: siteDesc.value,
+    siteUrl: siteUrl.value,
+    createTime: Date.now(),
+    timeStamp: new Date().toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    })
+  });
+
+  // Saving the new bookmark
+  setData(currentUser, bookmarks);
+
+  bookmarksContainer.style.display = "block";
+
+  // Display the new and old bookmarks
+  displayBookmarks();
+}
 
 window.onload = function () {
   loadUsers();
