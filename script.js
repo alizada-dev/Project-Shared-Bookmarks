@@ -4,7 +4,7 @@
 // Note that when running locally, in order to open a web page which uses modules, you must serve the directory over HTTP e.g. with https://www.npmjs.com/package/http-server
 // You can't open the index.html file using a file:// URL.
 
-import { getData, getUserIds, setData } from "./storage.js";
+import { clearData, getData, getUserIds, setData } from "./storage.js";
 
 // Elements
 const userSelect = document.querySelector(".select");
@@ -62,6 +62,13 @@ function displayBookmarks() {
           <a href="${bookmark.siteUrl}">${bookmark.siteName}</a>
           <p>${bookmark.siteDesc}</p>
           <h3>${bookmark.timeStamp}</h3>
+
+          <button onclick="like(${bookmark.createTime})">Like <span>${bookmark.likes}</span></button>
+
+           <div>
+            <button onclick="copy(${bookmark.createTime})">Copy</button>
+            <button onclick="deleteBookmark(${bookmark.createTime})">Delete</button>
+          </div>
       </div>
     `
   })
@@ -85,6 +92,7 @@ function addBookmark() {
     siteName: siteTitle.value,
     siteDesc: siteDesc.value,
     siteUrl: siteUrl.value,
+    likes: 0,
     createTime: Date.now(),
     timeStamp: new Date().toLocaleDateString("en-GB", {
       day: "numeric",
@@ -96,12 +104,63 @@ function addBookmark() {
   // Saving the new bookmark
   setData(currentUser, bookmarks);
 
+  // Clear the form
+  siteTitle.value = "";
+  siteDesc.value = "";
+  siteUrl.value = "";
+
   bookmarksContainer.style.display = "block";
 
   // Display the new and old bookmarks
   displayBookmarks();
 }
 
+// Like function
+function like(createTime) {
+  const bookmarks = getData(currentUser) || [];
+
+  const bookmark = bookmarks.find(
+    (bookmark) => bookmark.createTime === createTime
+  )
+
+  bookmark.likes = bookmark.likes || 0;
+
+  bookmark.likes++;
+  
+  setData(currentUser, bookmarks);
+
+  displayBookmarks();
+}
+
+// Copy function
+function copy(createTime) {
+  const bookmarks = getData(currentUser) || [];
+
+  const bookmark = bookmarks.find(
+    (bookmark) => bookmark.createTime === createTime
+  )
+
+  navigator.clipboard.writeText(bookmark.siteUrl);
+
+  alert("URL copied");
+}
+
+// Delete function
+function deleteBookmark(createTime) {
+  const bookmarks = getData(currentUser) || [];
+  const updatedBookmarks = bookmarks.filter((bookmark) => bookmark.createTime !== createTime)
+
+  alert("Bookmark deleted!");
+  
+  setData(currentUser, updatedBookmarks);
+  
+  displayBookmarks()
+}
+
+
 window.onload = function () {
   loadUsers();
 };
+window.like = like;
+window.deleteBookmark = deleteBookmark;
+window.copy = copy;
