@@ -1,9 +1,4 @@
-// This is a placeholder file which shows how you can access functions defined in other files.
-// It can be loaded into index.html.
-// You can delete the contents of the file once you have understood how it works.
-// Note that when running locally, in order to open a web page which uses modules, you must serve the directory over HTTP e.g. with https://www.npmjs.com/package/http-server
-// You can't open the index.html file using a file:// URL.
-
+// Import functions from storage.js
 import { clearData, getData, getUserIds, setData } from "./storage.js";
 
 // Elements
@@ -36,13 +31,14 @@ userSelect.addEventListener("change", e => {
   const userData = getData(currentUser) || [];
 
   if (userData.length === 0) {
-    msg.textContent = "Sorry, no saved bookmark for the selected user."
+    msg.textContent = "Sorry, no saved bookmarks for the selected user."
 
     bookmarksContainer.style.display = "none";
     bookmarkForm.style.display = "block"
     return;
   }
   
+  msg.textContent = "";
   bookmarksContainer.style.display = "block";
   bookmarkForm.style.display = "block";
   
@@ -61,7 +57,7 @@ function displayBookmarks() {
       <div class="bookmark-details">
           <a href="${bookmark.siteUrl}">${bookmark.siteName}</a>
           <p>${bookmark.siteDesc}</p>
-          <h3>${bookmark.timeStamp}</h3>
+          <p>Created: ${bookmark.timeStamp}</p>
 
           <button onclick="like(${bookmark.createTime})">Like <span>${bookmark.likes}</span></button>
 

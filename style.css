@@ -5,3 +5,7 @@
 .bookmark-details, .message {
     border-bottom: 1px solid gray;
 }
+
+.message {
+    color: red;
+}
