@@ -1,5 +1,3 @@
-<!doctype html>
-<html>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,13 +8,22 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <!-- Bookmark Template -->
     <template id="bookmark-template">
-      <a class="bookmark-url" href="#" target="_blank"><h2></h2></a>
-      <p class="description"></p>
-      <p class="timeCreated"></p>
-      <button class="copyToClipboard">Copy to Clipboard</button>
-      <button class="likeButton">Like</button>
-      <p class="likeCount">Likes: 0</p>
+      <article>
+        <h3>
+          <a class="bookmark-url" href="#" target="_blank"></a>
+        </h3>
+
+        <p class="description"></p>
+        <p class="time-created"></p>
+      
+        <p class="like-count">Likes: 0</p>
+
+        <button class="copyBtn">Copy to Clipboard</button>
+        <button class="likeBtn">Like</button>
+        <button class="deleteBtn">Delete</button>
+      </article>
     </template>
 
     <main class="container">
@@ -31,13 +38,13 @@
           </option>
         </select>
       </div>
-      <section class="bookmarks" id="bookmarks"></section>
-    </div>
 
+      <!-- Container for displaying bookmarks -->
       <div class="bookmarks-container"></div>
 
       <p class="message"></p>
 
+      <!-- Bookmark form to add new bookmarks -->
       <form action="" id="bookmarks-form">
         <h2>Add a new bookmark</h2>
 
