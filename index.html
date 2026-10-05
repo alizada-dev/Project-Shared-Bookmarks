@@ -1,3 +1,5 @@
+<!doctype html>
+<html>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,17 +10,29 @@
     <link rel="stylesheet" href="style.css">
   </head>
   <body>
+    <template id="bookmark-template">
+      <a class="bookmark-url" href="#" target="_blank"><h2></h2></a>
+      <p class="description"></p>
+      <p class="timeCreated"></p>
+      <button class="copyToClipboard">Copy to Clipboard</button>
+      <button class="likeButton">Like</button>
+      <p class="likeCount">Likes: 0</p>
+    </template>
 
     <main class="container">
       <h1>Welcome to the Shared Bookmarks!</h1>
-      
+
       <div class="dropdown">
         <label for="user">Select a user to see their saved bookmarks:</label>
 
         <select class="select" id="user">
-          <option value="" selected disabled>Select one of the following users</option>
+          <option value="" selected disabled>
+            Select one of the following users
+          </option>
         </select>
       </div>
+      <section class="bookmarks" id="bookmarks"></section>
+    </div>
 
       <div class="bookmarks-container"></div>
 
