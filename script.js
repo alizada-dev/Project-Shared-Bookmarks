@@ -1,5 +1,5 @@
 // Import functions from storage.js
-import { clearData, getData, getUserIds, setData } from "./storage.js";
+import { getData, getUserIds, setData } from "./storage.js";
 
 // Elements
 const userSelect = document.querySelector(".select");
@@ -47,28 +47,49 @@ userSelect.addEventListener("change", e => {
 
 function displayBookmarks() {
   const bookmarks = getData(currentUser) || [];
+
+  // Sorting the copy of the returned bookmarks; not mutating the original
+  const sortedBookmarks = [...bookmarks].sort(
+    (a, b) => b.createTime - a.createTime
+  )
   
-  bookmarks.sort((a, b) => b.createTime - a.createTime)
-  bookmarksContainer.innerHTML = "";
   bookmarksContainer.innerHTML = `<h2>Saved bookmarks</h2>`;
 
-  bookmarks.forEach((bookmark, index) => {
-    bookmarksContainer.innerHTML += `
-      <div class="bookmark-details">
-          <a href="${bookmark.siteUrl}">${bookmark.siteName}</a>
-          <p>${bookmark.siteDesc}</p>
-          <p>Created: ${bookmark.timeStamp}</p>
+  sortedBookmarks.forEach((bookmark) => {
+    const bookmarkTemplate = document
+      .getElementById("bookmark-template")
+      .content
+      .cloneNode(true);
 
-          <button onclick="like(${bookmark.createTime})">Like <span>${bookmark.likes}</span></button>
+    bookmarkTemplate.querySelector(".bookmark-url").textContent = bookmark.siteName;
+    bookmarkTemplate.querySelector(".bookmark-url").href = bookmark.siteUrl;
 
-           <div>
-            <button onclick="copy(${bookmark.createTime})">Copy</button>
-            <button onclick="deleteBookmark(${bookmark.createTime})">Delete</button>
-          </div>
-      </div>
-    `
+    bookmarkTemplate.querySelector(".description").textContent = bookmark.siteDesc;
+
+    bookmarkTemplate.querySelector(".time-created").textContent = `Created: ${bookmark.timeStamp}`;
+
+    bookmarkTemplate.querySelector(".like-count").textContent = `Likes: ${bookmark.likes || 0}`
+
+    // Like button
+    bookmarkTemplate.querySelector(".likeBtn").addEventListener("click", () => {
+      like(bookmark.createTime);
+    })
+
+    // Copy button
+    bookmarkTemplate.querySelector(".copyBtn").addEventListener("click", () => {
+      copy(bookmark.createTime);
+    })
+
+    // Delete button
+    bookmarkTemplate.querySelector(".deleteBtn").addEventListener("click", () => {
+      deleteBookmark(bookmark.createTime);
+    })
+
+    // Adding bookmark to the page
+    bookmarksContainer.append(bookmarkTemplate);
   })
 }
+
 
 // Submit button
 bookmarkForm.addEventListener("submit", (e) => {
@@ -79,6 +100,7 @@ bookmarkForm.addEventListener("submit", (e) => {
 
 // Adding a new bookmark
 function addBookmark() {
+  // If currentUser is empty/null/undefined/false, stop running this function
   if (!currentUser) return;
 
   const bookmarks = getData(currentUser) || [];
@@ -90,6 +112,7 @@ function addBookmark() {
     siteUrl: siteUrl.value,
     likes: 0,
     createTime: Date.now(),
+    // create human-readable date
     timeStamp: new Date().toLocaleDateString("en-GB", {
       day: "numeric",
       month: "short",
@@ -156,67 +179,4 @@ function deleteBookmark(createTime) {
 
 window.onload = function () {
   loadUsers();
-
-  //allows to select a user and return associated value in object
-  const selectUser = document.querySelector(".select");
-
-  //listens for a selected user and displays their bookmarks.
-  selectUser.addEventListener("change", (event) => {
-    const selectedUser = event.target.value;
-    displayBookmarks(selectedUser);
-  });
 };
-
-//displays the bookmarks of a selected user on the site
-function displayBookmarks(userId) {
-  const user = `user${userId} `;
-  console.log(`the user array has: ${user}`);
-  const bookMarkSection = document.querySelector("#bookmarks");
-  //bookMarkSection.innerHTML = "";
-
-  const bookmarks = users[0].map(createBookmark);
-
-  bookMarkSection.append(...bookmarks);
-}
-
-//we create a single instance of a bookmark
-function createBookmark(bookMark) {
-  const bookmark = document
-    .getElementById("bookmark-template")
-    .content.cloneNode(true);
-  bookmark.querySelector("h2").textContent = bookMark.title;
-  console.log(bookMark.title);
-  bookmark.querySelector(".description").textContent = bookMark.description;
-  bookmark.querySelector(".timeCreated").textContent = bookMark.timestamp;
-  bookmark.querySelector("a").href = bookMark.URL;
-
-  return bookmark;
-}
-
-const users = [
-  [
-    {
-      userId: 1,
-      title: "MDN resource",
-      URL: "https://developer.mozilla.org/en-US/",
-      description:
-        "A useful resource for web developers, new and old. has learning materials and in depth explanations of HTML, CSS and JS topics",
-      timestamp: "1/10/26 12:00",
-    },
-    {
-      userId: 1,
-      title: "W3Schools",
-      URL: "https://www.w3schools.com/",
-      description:
-        "A quick reference site for web developers. With tutorials and in depth explanations of HTML, CSS and JS topics",
-      timestamp: "12/09/26 17:00",
-    },
-  ],
-  [],
-  [],
-  [],
-  [],
-];
-window.like = like;
-window.deleteBookmark = deleteBookmark;
-window.copy = copy;
