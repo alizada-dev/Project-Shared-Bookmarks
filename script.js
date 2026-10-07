@@ -130,6 +130,7 @@ function addBookmark() {
   siteUrl.value = "";
 
   bookmarksContainer.style.display = "block";
+  msg.textContent = "";
 
   // Display the new and old bookmarks
   displayBookmarks();
@@ -167,7 +168,11 @@ function deleteBookmark(createTime) {
   
   setData(currentUser, updatedBookmarks);
   
-  displayBookmarks()
+  if (bookmarks.length != 0) {
+    displayBookmarks()
+  }
+
+  msg.textContent = "Sorry, no saved bookmarks for the selected user.";
 }
 
 
