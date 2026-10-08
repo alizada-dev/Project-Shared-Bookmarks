@@ -8,7 +8,7 @@ const bookmarksContainer = document.querySelector(".bookmarks-container");
 const bookmarkForm = document.querySelector("#bookmarks-form");
 const siteTitle = document.querySelector("#title");
 const siteDesc = document.querySelector("#desc");
-const siteUrl = document.querySelector("#url")
+const siteUrl = document.querySelector("#url");
 const msg = document.querySelector(".message");
 
 // Global variables
@@ -27,70 +27,74 @@ function loadUsers() {
 }
 
 // selecting users from the dropdown
-userSelect.addEventListener("change", e => {
+userSelect.addEventListener("change", (e) => {
   currentUser = e.target.value;
   const userData = getData(currentUser) || [];
 
   if (userData.length === 0) {
-    msg.textContent = "Sorry, no saved bookmarks for the selected user."
+    msg.textContent = "Sorry, no saved bookmarks for the selected user.";
 
     bookmarksContainer.style.display = "none";
-    bookmarkForm.style.display = "block"
+    bookmarkForm.style.display = "block";
     return;
   }
-  
+
   msg.textContent = "";
   bookmarksContainer.style.display = "block";
   bookmarkForm.style.display = "block";
-  
+
   displayBookmarks();
-})
+});
 
 function displayBookmarks() {
   const bookmarks = getData(currentUser) || [];
 
   // Sorting the copy of the returned bookmarks; not mutating the original
   const sortedBookmarks = [...bookmarks].sort(
-    (a, b) => b.createTime - a.createTime
-  )
-  
+    (a, b) => b.createTime - a.createTime,
+  );
+
   bookmarksContainer.innerHTML = `<h2>Saved bookmarks</h2>`;
 
   sortedBookmarks.forEach((bookmark) => {
     const bookmarkTemplate = document
       .getElementById("bookmark-template")
-      .content
-      .cloneNode(true);
+      .content.cloneNode(true);
 
-    bookmarkTemplate.querySelector(".bookmark-url").textContent = bookmark.siteName;
+    bookmarkTemplate.querySelector(".bookmark-url").textContent =
+      bookmark.siteName;
     bookmarkTemplate.querySelector(".bookmark-url").href = bookmark.siteUrl;
 
-    bookmarkTemplate.querySelector(".description").textContent = bookmark.siteDesc;
+    bookmarkTemplate.querySelector(".description").textContent =
+      bookmark.siteDesc;
 
-    bookmarkTemplate.querySelector(".time-created").textContent = `Created: ${bookmark.timeStamp}`;
+    bookmarkTemplate.querySelector(".time-created").textContent =
+      `Created: ${bookmark.timeStamp}`;
 
-    bookmarkTemplate.querySelector(".like-count").textContent = `Likes: ${bookmark.likes || 0}`
+    bookmarkTemplate.querySelector(".like-count").textContent =
+      `Likes: ${bookmark.likes || 0}`;
 
     // Like button
     bookmarkTemplate.querySelector(".likeBtn").addEventListener("click", () => {
       like(bookmark.createTime);
-    })
+    });
 
     // Copy button
     bookmarkTemplate.querySelector(".copyBtn").addEventListener("click", () => {
       copy(bookmark.createTime);
-    })
+    });
 
     // Delete button
-    bookmarkTemplate.querySelector(".deleteBtn").addEventListener("click", () => {
-      deleteBookmark(bookmark.createTime);
-    })
+    bookmarkTemplate
+      .querySelector(".deleteBtn")
+      .addEventListener("click", () => {
+        deleteBookmark(bookmark.createTime);
+      });
 
     // Adding bookmark to the page
     bookmarksContainer.append(bookmarkTemplate);
-  })
+  });
 }
-
 
 // Submit button
 bookmarkForm.addEventListener("submit", (e) => {
@@ -117,8 +121,8 @@ function addBookmark() {
     timeStamp: new Date().toLocaleDateString("en-GB", {
       day: "numeric",
       month: "short",
-      year: "numeric"
-    })
+      year: "numeric",
+    }),
   });
 
   // Saving the new bookmark
@@ -141,7 +145,7 @@ function like(createTime) {
   const bookmarks = getData(currentUser) || [];
 
   const updatedBookmarks = likeBookmark(bookmarks, createTime);
-  
+
   setData(currentUser, updatedBookmarks);
   displayBookmarks();
 }
@@ -151,8 +155,8 @@ function copy(createTime) {
   const bookmarks = getData(currentUser) || [];
 
   const bookmark = bookmarks.find(
-    (bookmark) => bookmark.createTime === createTime
-  )
+    (bookmark) => bookmark.createTime === createTime,
+  );
 
   navigator.clipboard.writeText(bookmark.siteUrl);
 
@@ -162,19 +166,23 @@ function copy(createTime) {
 // Delete function
 function deleteBookmark(createTime) {
   const bookmarks = getData(currentUser) || [];
-  const updatedBookmarks = bookmarks.filter((bookmark) => bookmark.createTime !== createTime)
+  const updatedBookmarks = bookmarks.filter(
+    (bookmark) => bookmark.createTime !== createTime,
+  );
 
   alert("Bookmark deleted!");
-  
+
   setData(currentUser, updatedBookmarks);
-  
-  if (bookmarks.length != 0) {
-    displayBookmarks()
+
+  if (updatedBookmarks.length === 0) {
+    bookmarksContainer.style.display = "none";
+    msg.textContent = "Sorry, no saved bookmarks for the selected user.";
+  } else {
+    bookmarksContainer.style.display = "block";
+    msg.textContent = "";
+    displayBookmarks();
   }
-
-  msg.textContent = "Sorry, no saved bookmarks for the selected user.";
 }
-
 
 window.onload = function () {
   loadUsers();
