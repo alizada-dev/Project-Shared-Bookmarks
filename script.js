@@ -1,5 +1,6 @@
 // Import functions from storage.js
 import { getData, getUserIds, setData } from "./storage.js";
+import { likeBookmark } from "./utils.js";
 
 // Elements
 const userSelect = document.querySelector(".select");
@@ -129,6 +130,7 @@ function addBookmark() {
   siteUrl.value = "";
 
   bookmarksContainer.style.display = "block";
+  msg.textContent = "";
 
   // Display the new and old bookmarks
   displayBookmarks();
@@ -138,16 +140,9 @@ function addBookmark() {
 function like(createTime) {
   const bookmarks = getData(currentUser) || [];
 
-  const bookmark = bookmarks.find(
-    (bookmark) => bookmark.createTime === createTime
-  )
-
-  bookmark.likes = bookmark.likes || 0;
-
-  bookmark.likes++;
+  const updatedBookmarks = likeBookmark(bookmarks, createTime);
   
-  setData(currentUser, bookmarks);
-
+  setData(currentUser, updatedBookmarks);
   displayBookmarks();
 }
 
@@ -173,7 +168,11 @@ function deleteBookmark(createTime) {
   
   setData(currentUser, updatedBookmarks);
   
-  displayBookmarks()
+  if (bookmarks.length != 0) {
+    displayBookmarks()
+  }
+
+  msg.textContent = "Sorry, no saved bookmarks for the selected user.";
 }
 
 
