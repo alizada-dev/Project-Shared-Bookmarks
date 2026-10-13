@@ -18,10 +18,12 @@
         <p class="description"></p>
         <p class="time-created"></p>
 
-        <p class="like-count">Likes: 0</p>
-
         <button class="copyBtn">Copy to Clipboard</button>
-        <button class="likeBtn">Like</button>
+
+        <button class="likeBtn">
+          <p class="like-count"></p>
+        </button>
+
         <button class="deleteBtn">Delete</button>
       </article>
     </template>
@@ -39,26 +41,28 @@
         </select>
       </div>
 
+      <!-- Bookmark form to add new bookmarks -->
+      <form action="" id="bookmarks-form">
+        <h2>Add a new bookmark</h2>
+      
+        <label for="title">Site title</label>
+        <input type="text" id="title" required />
+      
+        <label for="desc">Description</label>
+        <input type="text" id="desc" required />
+      
+        <label for="url">Site URL</label>
+        <input type="url" id="url" required />
+      
+        <button type="submit" id="submit-btn">Submit</button>
+      </form>
+
       <!-- Container for displaying bookmarks -->
       <div class="bookmarks-container"></div>
 
       <p class="message"></p>
 
-      <!-- Bookmark form to add new bookmarks -->
-      <form action="" id="bookmarks-form">
-        <h2>Add a new bookmark</h2>
-
-        <label for="title">Site title</label>
-        <input type="text" id="title" required />
-
-        <label for="desc">Description</label>
-        <input type="text" id="desc" required />
-
-        <label for="url">Site URL</label>
-        <input type="url" id="url" required />
-
-        <button type="submit" id="submit-btn">Submit</button>
-      </form>
+      <div id="snackbar"></div>
     </main>
   </body>
 </html>
