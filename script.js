@@ -10,6 +10,7 @@ const siteTitle = document.querySelector("#title");
 const siteDesc = document.querySelector("#desc");
 const siteUrl = document.querySelector("#url");
 const msg = document.querySelector(".message");
+const toast = document.querySelector("#snackbar");
 
 // Global variables
 let currentUser = null;
@@ -35,13 +36,11 @@ userSelect.addEventListener("change", (e) => {
     msg.textContent = "Sorry, no saved bookmarks for the selected user.";
 
     bookmarksContainer.style.display = "none";
-    bookmarkForm.style.display = "block";
     return;
   }
 
   msg.textContent = "";
   bookmarksContainer.style.display = "block";
-  bookmarkForm.style.display = "block";
 
   displayBookmarks();
 });
@@ -72,7 +71,7 @@ function displayBookmarks() {
       `Created: ${bookmark.timeStamp}`;
 
     bookmarkTemplate.querySelector(".like-count").textContent =
-      `Likes: ${bookmark.likes || 0}`;
+      `❤️ ${bookmark.likes || 0}`;
 
     // Like button
     bookmarkTemplate.querySelector(".likeBtn").addEventListener("click", () => {
@@ -99,14 +98,16 @@ function displayBookmarks() {
 // Submit button
 bookmarkForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  if (!currentUser) return;
   addBookmark();
 });
 
+
 // Adding a new bookmark
 function addBookmark() {
-  // If currentUser is empty/null/undefined/false, stop running this function
-  if (!currentUser) return;
+  if (!currentUser) {
+    alert("Please select a user before adding a bookmark.");
+    return;
+  }
 
   const bookmarks = getData(currentUser) || [];
 
@@ -117,18 +118,24 @@ function addBookmark() {
     siteUrl: siteUrl.value,
     likes: 0,
     createTime: Date.now(),
-    // create human-readable date
-    timeStamp: new Date().toLocaleDateString("en-GB", {
-      day: "numeric",
+    timeStamp: new Date().toLocaleString("en-GB", {
+      day: "2-digit",
       month: "short",
       year: "numeric",
-    }),
+      hour: "2-digit",
+      minute: "2-digit"
+    })
   });
 
   // Saving the new bookmark
   setData(currentUser, bookmarks);
 
-  // Clear the form
+  toast.className = "show";
+  toast.textContent = "Bookmark added successfully!";
+  setTimeout(() => {
+    toast.className = toast.className.replace("show", "");
+  }, 3000);
+
   siteTitle.value = "";
   siteDesc.value = "";
   siteUrl.value = "";
@@ -140,6 +147,7 @@ function addBookmark() {
   displayBookmarks();
 }
 
+
 // Like function
 function like(createTime) {
   const bookmarks = getData(currentUser) || [];
@@ -149,6 +157,7 @@ function like(createTime) {
   setData(currentUser, updatedBookmarks);
   displayBookmarks();
 }
+
 
 // Copy function
 function copy(createTime) {
@@ -160,8 +169,13 @@ function copy(createTime) {
 
   navigator.clipboard.writeText(bookmark.siteUrl);
 
-  alert("URL copied");
+  toast.className = "show";
+  toast.textContent = "Bookmark URL copied to clipboard!";
+  setTimeout(() => {
+    toast.className = toast.className.replace("show", "");
+  }, 3000);
 }
+
 
 // Delete function
 function deleteBookmark(createTime) {
@@ -170,17 +184,23 @@ function deleteBookmark(createTime) {
     (bookmark) => bookmark.createTime !== createTime,
   );
 
-  alert("Bookmark deleted!");
-
-  setData(currentUser, updatedBookmarks);
-
-  if (updatedBookmarks.length === 0) {
-    bookmarksContainer.style.display = "none";
-    msg.textContent = "Sorry, no saved bookmarks for the selected user.";
-  } else {
-    bookmarksContainer.style.display = "block";
-    msg.textContent = "";
-    displayBookmarks();
+  if (window.confirm("Are you sure you want to delete this bookmark?")) {
+    toast.className = "show";
+    toast.textContent = "Bookmark deleted successfully!";
+    setTimeout(() => {
+      toast.className = toast.className.replace("show", "");
+    }, 3000);
+  
+    setData(currentUser, updatedBookmarks);
+  
+    if (updatedBookmarks.length === 0) {
+      bookmarksContainer.style.display = "none";
+      msg.textContent = "Sorry, no saved bookmarks for the selected user.";
+    } else {
+      bookmarksContainer.style.display = "block";
+      msg.textContent = "";
+      displayBookmarks();
+    }
   }
 }
 
